@@ -16,6 +16,10 @@ double function_g(double x) {
 	return 1.0/((x+1)*sqrt(x));
 }
 
+double function_h(double x) {
+	return sin(sqrt(x)) * exp(sqrt(x)) / sqrt(x);
+}
+
 double eval_improper_integral(double func (double), double a, double b, double precision) {
 	double sum = 0.0;
 	if(isinf(a) && isinf(b)) { 					// Assuming convergence and diagonal and vertical symmetry
@@ -70,6 +74,7 @@ double eval_integral(double func (double), double a, double b, double precision)
 }
 
 int main() {
+	printf("a=0, b=2, sin(sqrt(x))e^sqrt(x))/sqrt(x) ≈ %.6f\n", eval_integral(&function_h, 0, 2, 0.000001));
 	printf("a=-∞, b=∞, ∫e^{-x^2} ≈ %.6f\n", eval_integral(&function_f, -INFINITY, INFINITY, 0.0000001));
 	printf("a=0, b=∞, ∫1/{(x+1)sqrt(x)} ≈ %.6f\n", eval_integral(&function_g, 0, INFINITY, 0.0000001));
 }
