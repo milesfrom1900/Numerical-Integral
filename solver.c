@@ -1,6 +1,5 @@
 #include <stdio.h>
 
-// abs()
 #include <stdlib.h>
 #include <math.h>
 
@@ -10,8 +9,11 @@ double sgn(double x) { // Signumfunction except sign(0) = 1
 }
 
 double function_f(double x) {
-	//return 1.0/((x+1)*sqrt(x));
 	return exp(-x*x);
+}
+
+double function_g(double x) {
+	return 1.0/((x+1)*sqrt(x));
 }
 
 double eval_improper_integral(double func (double), double a, double b, double precision) {
@@ -28,31 +30,23 @@ double eval_improper_integral(double func (double), double a, double b, double p
 			a+=delta;
 			py = func(a);
 			ny = func(-a);
-		} while(1.0/delta > precision || py==0); // symmetry assumption
+		} while(1.0/delta > precision);
 	} else if(isinf(b)) {
 		double delta = precision, y = func(a); 	// positive y, negative y
-		
 		do {
-
-			if(isfinite(y) && y != 0) { // symmetry assumption
+			if(isfinite(y) && y != 0) {
 				delta = fabs(precision/y);
 				sum += sgn(y) * precision;
 			}
 			a+=delta;
 			y = func(a);
-			//printf("%f\n", fabs(delta*y));
-			//printf("%i\n", fabs(delta*y) >= 0.01);
-		} while(1.0/delta > precision || y==0); // symmetry assumption
+		} while(1.0/delta > precision);
 	}
 	return sum;
 }
 
 double eval_integral(double func (double), double a, double b, double precision) {
-	// Precision
-	const double p1 = precision;
-
 	double sum = 0.0, k = 1.0;
-	
 	if(a > b) {
 		int swap = a;
 		a=b;
@@ -60,12 +54,12 @@ double eval_integral(double func (double), double a, double b, double precision)
 		k = -k;
 	}
 	if(isfinite(a) && isfinite(b)) {
-		double delta = p1, y;
+		double delta = precision, y;
 		while(a <= b) {
 			y = func(a);
 			if(isfinite(y) && y != 0) {
-				delta = fabs(p1/y); // Adjust delta accordingly
-				sum += sgn(y)*p1; // y*delta = y*p1/y = p1
+				delta = fabs(precision/y); // Adjust delta accordingly
+				sum += sgn(y)*precision; // y*delta = y*p1/y = p1
 			}
 			a+=delta;
 		}
@@ -76,8 +70,6 @@ double eval_integral(double func (double), double a, double b, double precision)
 }
 
 int main() {
-	double a = 0.0;
-	double b = INFINITY;
-
-	printf("Evaluation: %.15f", eval_integral(&function_f, a, b, 0.00001));
+	printf("a=-∞, b=∞, ∫e^{-x^2} ≈ %.6f\n", eval_integral(&function_f, -INFINITY, INFINITY, 0.0000001));
+	printf("a=0, b=∞, ∫1/{(x+1)sqrt(x)} ≈ %.6f\n", eval_integral(&function_g, 0, INFINITY, 0.0000001));
 }
