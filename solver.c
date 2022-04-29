@@ -20,31 +20,43 @@ double function_h(double x) {
 	return sin(sqrt(x)) * exp(sqrt(x)) / sqrt(x);
 }
 
+double function_a(double x) {
+	return x;
+}
+
 double eval_improper_integral(double func (double), double a, double b, double precision) {
 	double sum = 0.0;
 	if(isinf(a) && isinf(b)) { 					// Assuming convergence and diagonal and vertical symmetry
 		a = 0.0; 								// Variable a is reused
-		double delta = precision, py = func(a), ny = func(-a); 	// positive y, negative y
+		double delta = 0.00000000000001, py = func(a), ny = func(-a), lpy = py, lny = ny; 	// positive y, negative y
 		do {
 			if(isfinite(py) && py != 0) { // symmetry assumption
+				sum += sgn(py) * (precision - fabs(lpy-py)*0.5*delta);
+				sum += sgn(ny) * (precision - fabs(lny-ny)*0.5*delta);
+				//sum += sgn(py) * (precision);
+				//sum += sgn(ny) * (precision);
 				delta = fabs(precision/py);
-				sum += sgn(py) * precision;
-				sum += sgn(ny) * precision;
 			}
 			a+=delta;
+			lpy = py;
 			py = func(a);
+			lny = ny;
 			ny = func(-a);
-		} while(1.0/delta > precision);
+			if(!isfinite(lpy)) lpy = py;
+			if(!isfinite(lny)) lny = ny;
+		} while(a < 1e10);
 	} else if(isinf(b)) {
-		double delta = precision, y = func(a); 	// positive y, negative y
+		double delta = 0.00000000000001, y = func(a), ly = y;
 		do {
 			if(isfinite(y) && y != 0) {
+				sum += sgn(y) * (precision);
 				delta = fabs(precision/y);
-				sum += sgn(y) * precision;
 			}
 			a+=delta;
+			ly = y;
 			y = func(a);
-		} while(1.0/delta > precision);
+			if(!isfinite(ly)) ly = y;
+		} while(a < 1e10);
 	}
 	return sum;
 }
@@ -58,14 +70,14 @@ double eval_integral(double func (double), double a, double b, double precision)
 		k = -k;
 	}
 	if(isfinite(a) && isfinite(b)) {
-		double delta = precision, y;
+		double delta = precision, y, ly = func(a);
 		while(a <= b) {
 			y = func(a);
 			if(isfinite(y) && y != 0) {
-				delta = fabs(precision/y); // Adjust delta accordingly
-				sum += sgn(y)*precision; // y*delta = y*p1/y = p1
+				sum += (y+sgn(y)*fabs(ly-y)*0.5)*delta; // y*delta = y*p1/y = p1
 			}
 			a+=delta;
+			ly=y;
 		}
 	} else {
 		return eval_improper_integral(func, a, b, precision);
@@ -74,7 +86,8 @@ double eval_integral(double func (double), double a, double b, double precision)
 }
 
 int main() {
-	printf("a=0, b=2, sin(sqrt(x))e^sqrt(x))/sqrt(x) ≈ %.6f\n", eval_integral(&function_h, 0, 2, 0.000001));
-	printf("a=-∞, b=∞, ∫e^{-x^2} ≈ %.6f\n", eval_integral(&function_f, -INFINITY, INFINITY, 0.0000001));
-	printf("a=0, b=∞, ∫1/{(x+1)sqrt(x)} ≈ %.6f\n", eval_integral(&function_g, 0, INFINITY, 0.0000001));
+	printf("a=-∞, b=∞, ∫e^{-x^2}dx ≈ %.6f\n", eval_integral(&function_f, -INFINITY, INFINITY, 0.000002));
+	printf("a=0, b=∞, ∫1/{(x+1)sqrt(x)}dx ≈ %.6f\n", eval_integral(&function_g, 0, INFINITY, 0.000001));
+	
+	printf("a=0, b=1, ∫xdx ≈ %.6f\n", eval_integral(&function_a, 0, 1, 0.00001));
 }
