@@ -13,7 +13,10 @@ double function_f(double x) {
 }
 
 double function_g(double x) {
-	return 1.0/((x+1)*sqrt(x));
+	//return 1.0/((x+1)*sqrt(x));
+	//return 2*exp(x)/((exp(x)-1)*(exp(x)-1)+1);
+	//return 2*2*pow(x,1)/(pow(x,4)+1);
+	return sqrt(1-x*x);
 }
 
 double function_h(double x) {
@@ -86,8 +89,8 @@ double eval_integral(double func (double), double a, double b, double precision)
 }
 
 int main() {
-	printf("a=-∞, b=∞, ∫e^{-x^2}dx ≈ %.6f\n", eval_integral(&function_f, -INFINITY, INFINITY, 0.000002));
-	printf("a=0, b=∞, ∫1/{(x+1)sqrt(x)}dx ≈ %.6f\n", eval_integral(&function_g, 0, INFINITY, 0.000001));
+	//printf("a=-∞, b=∞, ∫e^{-x^2}dx ≈ %.6f\n", eval_integral(&function_f, -INFINITY, INFINITY, 0.000002));
+	printf("a=0, b=∞, ∫1/{(x+1)sqrt(x)}dx ≈ %.7f\n", 2*eval_integral(&function_g, -1, 1, 0.0000001));
 	
-	printf("a=0, b=1, ∫xdx ≈ %.6f\n", eval_integral(&function_a, 0, 1, 0.00001));
+	//printf("a=0, b=1, ∫xdx ≈ %.6f\n", eval_integral(&function_a, 0, 1, 0.00001));
 }
