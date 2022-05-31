@@ -1,3 +1,5 @@
+//By Sebastian Miles 2022
+
 #include <stdio.h>
 
 #include <stdlib.h>
